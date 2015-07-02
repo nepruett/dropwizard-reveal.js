@@ -69,40 +69,61 @@
             <h2>This ain't your daddy's enterprise Java...</h2>
             <img src="images/coffee_ad.jpg" width="40%"/>
           </section>
-          <section></section>
+          <section>
+            <h3>DropWizard Goals -</h3>
+            <ul>
+              <li class="fragment visible">Simple</li>
+              <li class="fragment visible">Opinionated</li>
+              <li class="fragment visible">Production Ready</li>
+            </ul>
+          </section>
         </section>
-				<!-- Example of nested vertical slides -->
-				<section>
-					<section>
-						<h2>Vertical Slides</h2>
-						<p>Slides can be nested inside of each other.</p>
-						<p>Use the <em>Space</em> key to navigate through all slides.</p>
-						<br>
-						<a href="#" class="navigate-down">
-							<img width="178" height="238" data-src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Down arrow">
-						</a>
-					</section>
-					<section>
-						<h2>Basement Level 1</h2>
-						<p>Nested slides are useful for adding additional detail underneath a high level horizontal slide.</p>
-					</section>
-					<section>
-						<h2>Basement Level 2</h2>
-						<p>That's it, time to go back up.</p>
-						<br>
-						<a href="#/2">
-							<img width="178" height="238" data-src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Up arrow" style="transform: rotate(180deg); -webkit-transform: rotate(180deg);">
-						</a>
-					</section>
-				</section>
 
 				<section>
-					<h2>Slides</h2>
-					<p>
-						Not a coder? Not a problem. There's a fully-featured visual editor for authoring these, try it out at <a href="http://slides.com" target="_blank">http://slides.com</a>.
-					</p>
+          <h2>DropWizard HelloWorld Walkthrough</h2>
 				</section>
 
+        <section>
+          <h2>To get started -</h2>
+            <p>Create a new Maven project...
+            <pre><code data-trim contenteditable>
+mvn -B archetype:generate
+    -DarchetypeGroupId=io.dropwizard.archetypes
+    -DarchetypeArtifactId=java-simple
+    -DarchetypeVersion=0.8.1
+    -DgroupId=com.example
+    -DartifactId=hello
+    -Dname=hello
+            </code></pre>
+          </p>
+        </section>
+
+				<section>
+          <section>
+					  <h3>Pom.xml dependencies</h3>
+					  <pre><code data-trim contenteditable>
+<dependencies>
+  <dependency>
+    <groupId>io.dropwizard</groupId>
+    <artifactId>dropwizard-core</artifactId>
+    <version>${dropwizard.version}</version>
+  </dependency>
+</dependencies>
+            </code></pre>
+          </section>
+				  <section>
+            <h4>dropwizard-core provides the following:</h4>
+            <ul>
+              <li><b>Jetty</b> - for HTTP</li>
+              <li><b>Jersey (JAX-RS)</b> - for REST</li>
+              <li><b>Jackson</b> - for JSON</li>
+              <li><b>Guava & Joda Time</b> - for convenience</li>
+              <li><b>Logback & slf4j</b> - for logging</li>
+              <li><b>Metrics</b> - for runtime metrics and health checks</li>
+              <li><b>Hibernate Validator (JSR-303)</b> - for validation</li>
+            </ul>
+          </section>
+        </section>
 				<section>
 					<h2>Point of View</h2>
 					<p>
