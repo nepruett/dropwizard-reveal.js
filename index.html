@@ -162,9 +162,9 @@ public class HelloApplication extends Application&lt;HelloConfiguration&gt; {
           </section>
 				</section>
 
-				<section>
+        <section>
           <section>
-					  <p>HelloWorldResource.java</p>
+            <p>HelloWorldResource.java</p>
             <pre><code data-trim contenteditable>
 @Path("/hello-world")
 @Produces(MediaType.TEXT_PLAIN)
@@ -179,14 +179,14 @@ public class HelloWorldResource {
   @Timed
   public Response sayHello() {
     return Response.ok(
-        counter.incrementAndGet() + " Hello, World!"
+      counter.incrementAndGet() + " Hello, World!"
     ).build();
   }
 }
             </code></pre>
           </section>
           <section>
-            <p>Add to HelloWorldApplication.run() -</p>
+            <p>Add to HelloApplication.run() -</p>
             <pre><code data-trim contenteditable>
 final HelloWorldResource helloWorldResource = new HelloWorldResource();
 environment.jersey().register(helloWorldResource);
@@ -202,7 +202,274 @@ mvn package
 java -jar target/hello-1.0-SNAPSHOT.jar server
             </code></pre>
           </section>
+          <section>
+            <p>Open in browser...</p>
+            <img src="images/browser_hello_world.png"/>
+          </section>
+        </section>
+
+				<section>
+          <section>
+            <p>Let's add another resource...</p>
+            <p>with JSON mapping...</p>
+            <p>and configuration...</p>
+            <p>and tests...</p>
+            <p>and health checks.</p>
+          </section>
+          <section>
+					  <p>Message.java</p>
+            <pre><code data-trim contenteditable>
+public class Message {
+
+  private long id;
+
+  @Length(min = 3)
+  private String content;
+
+  public Message() {}
+
+  public Message(long id, String content) {
+    this.id = id;
+    this.content = content;
+  }
+
+  @JsonProperty
+  public long getId() {
+    return id;
+  }
+
+  @JsonProperty
+  public String getContent() {
+    return content;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(id, content);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o != null && o instanceof Message) {
+      Message other = (Message)o;
+      return Objects.equal(id, other.id) &&
+          Objects.equal(content, other.content);
+    }
+    return false;
+  }
+}
+            </code></pre>
+          </section>
+          <section>
+            <p>HelloNameResource.java</p>
+            <pre><code data-trim contenteditable>
+@Path("/hello")
+@Produces(MediaType.APPLICATION_JSON)
+public class HelloNameResource {
+  private final String template;
+  private final String defaultName;
+  private final AtomicLong counter;
+
+  public HelloNameResource(String template, String defaultName) {
+    // ...
+  }
+
+  @GET
+  @Timed
+  public Message sayHello(@QueryParam("name") Optional&lt;String&gt; name) {
+    final String value = String.format(template, name.or(defaultName));
+    return new Message(counter.incrementAndGet(), value);
+  }
+}
+            </code></pre>
+          </section>
+          <section>
+            <p>Add to HelloConfiguration -</p>
+            <pre><code data-trim contenteditable>
+@NotEmpty
+private String template;
+
+@NotEmpty
+private String defaultName = "Stranger";
+
+@JsonProperty
+public String getTemplate() {//..}
+
+@JsonProperty
+public void setTemplate(String template) {//..}
+
+@JsonProperty
+public String getDefaultName() {//..}
+
+@JsonProperty
+public void setDefaultName(String name) {//..}
+            </code></pre>
+          </section>
+          <section>
+            <p>Create hello_config.yaml in src/resources...</p>
+            <pre><code data-trim contenteditable>
+template: Hello, %s!
+defaultName: Stranger
+            </code></pre>
+          </section>
+          <section>
+            <p>Add to HelloApplication.run() -</p>
+            <pre><code data-trim contenteditable>
+final HelloNameResource helloNameResource = new HelloNameResource(
+  configuration.getTemplate(),
+  configuration.getDefaultName()
+);
+environment.jersey().register(helloNameResource);
+            </code></pre>
+          </section>
+          <section>
+            <p>Add to pom.xml -</p>
+            <pre><code  data-trim contenteditable>
+&lt;dependency&gt;
+  &lt;groupId&gt;io.dropwizard&lt;/groupId&gt;
+  &lt;artifactId&gt;dropwizard-testing&lt;/artifactId&gt;
+  &lt;version&gt;${dropwizard.version}&lt;/version&gt;
+&lt;/dependency&gt;
+            </code></pre>
+            <p>This pulls in -</p>
+            <ul>
+              <li>JUnit</li>
+              <li>Mockito</li>
+              <li>And Dropwizard specific testing classes...</li>
+            </ul>
+          </section>
+          <section>
+            <p>Test JSON serialization/deserialization - </p>
+            <p>Create a JSON representation in test/resources/fixtures/Message.json -</p>
+            <pre><code data-trim contenteditable>
+{
+  "id": 1,
+  "content": "Hello, TestName"
+}
+            </code></pre>
+          </section>
+          <section>
+            <p>Create MessageTest.java -</p>
+            <pre><code data-trim contenteditable>
+public class MessageTest {
+  private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
+
+  @Test
+  public void serializesToJSON() throws Exception {
+    final Message message = new Message(1, "Hello, TestName");
+
+    final String expected = MAPPER.writeValueAsString(
+      MAPPER.readValue(fixture(
+              "fixtures/com/example/api/Message.json"),
+              Message.class));
+
+    assertThat(MAPPER.writeValueAsString(message)).isEqualTo(expected);
+  }
+
+  @Test
+  public void deserializesFromJSON() throws Exception {
+    final Message message = new Message(1, "Hello, TestName");
+    assertThat(MAPPER.readValue(fixture(
+              "fixtures/com/example/api/Message.json"),
+              Message.class))
+    .isEqualTo(message);
+  }
+}
+            </code></pre>
+          </section>
+          <section>
+            <p>Test our resource class - </p>
+            <p>Create HelloNameResourceTest.java -</p>
+            <pre><code data-trim contenteditable>
+public class HelloNameResourceTest {
+
+  @Rule
+  public ResourceTestRule resources =
+    ResourceTestRule.builder()
+    .addResource(
+      new HelloNameResource("Hello, %s", "DefaultUser"))
+    .build();
+
+  @Test
+  public void testDefaultName() {
+    final Message defaultMessage =
+      new Message(1, "Hello, DefaultUser");
+    assertThat(resources.client()
+      .target("/hello")
+      .request().get(Message.class))
+    .isEqualTo(defaultMessage);
+  }
+
+  @Test
+  public void testSpecifiedName() {
+    final Message message =
+      new Message(1, "Hello, SpecifiedUser");
+    assertThat(resources.client()
+      .target("/hello?name=SpecifiedUser")
+      .request().get(Message.class))
+    .isEqualTo(message);
+  }
+}
+            </code></pre>
+          </section>
+          <section>
+            <p>Now add a runtime HealthCheck - </p>
+            <p>Create TemplateHealthCheck.java -</p>
+            <pre><code data-trim contenteditable>
+public class TemplateHealthCheck extends HealthCheck {
+  private final String template;
+
+  public TemplateHealthCheck(String template) {
+    this.template = template;
+  }
+
+  @Override
+  protected Result check() throws Exception {
+    final String saying = String.format(template, "TEST");
+    if (!saying.contains("TEST")) {
+      return Result.unhealthy("template doesn't include a name");
+    }
+    return HealthCheck.Result.healthy();
+  }
+}
+            </code></pre>
+          </section>
+          <section>
+            <p>Add to HelloApplication.run() -</p>
+            <pre><code data-trim contenteditable>
+final TemplateHealthCheck healthCheck =
+  new TemplateHealthCheck(configuration.getTemplate());
+environment.healthChecks().register("template", healthCheck);
+            </code></pre>
+          </section>
+          <section>
+            <p>Build...</p>
+            <p>(and test...)</p>
+            <pre><code data-trim contenteditable>
+mvn package
+            </code></pre>
+            <p>and Run...</p>
+            <pre><code data-trim contenteditable>
+java -jar target/hello-1.0-SNAPSHOT.jar
+     server target/classes/hello_config.yaml
+            </code></pre>
+          </section>
+          <section>
+            <p>Open in browser...</p>
+            <img src="images/browser_hello_name1.png"/>
+          </section>
+          <section>
+            <p>And with parameters...</p>
+            <img src="images/browser_hello_name2.png"/>
+          </section>
+          <section>
+            <p>And our healthcheck...</p>
+            <img src="images/browser_healthcheck.png"/>
+          </section>
 				</section>
+
+
 
 				<section data-markdown>
 					<script type="text/template">
