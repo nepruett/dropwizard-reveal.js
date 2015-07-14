@@ -547,20 +547,111 @@ java -jar target/hello-1.0-SNAPSHOT.jar
           <section>
             <h2>Microservices</h2>
           </section>
+          <section>
+            <h3>More like what you'd call guidelines, really...</h3>
+            <p>Much like Agile - it's hard to give a concrete definition,
+              but there are definite themes or characteristics which are
+              emphasized in a Microservice architecture...</p>
+          </section>
+          <section>
+            <p>Componentization via services</p>
+            <ul>
+              <li>Component - unit of software that is independently replaceable.</li>
+              <li>Services can be independently developed and deployed.</li>
+              <li>Evolutionary design.</li>
+              <li>Watch out for network overhead... prefer coarse-grained APIs or batching.</li>
+            </ul>
+          </section>
+          <section>
+            <p>Scaling Cube / 3 Axis Scaling</p>
+            <img src="images/scaling_cube.png"/>
+            <ul>
+              <li>X axis - duplication / cloning</li>
+              <li>Y axis - functional decomposition / split by differences</li>
+              <li>Z axis - partitioning / sharding / split by similarity</li>
+            </ul>
+          </section>
+          <section>
+            <p>Smart endpoints and dumb pipes</p>
+            <ul>
+              <li>Each microservice is decoupled and cohesive.</li>
+              <li><a href="https://en.wikipedia.org/wiki/Unix_philosophy">UNIX Philosophy</a> - small focused programs that can be combined together.</li>
+              <li>Focus on HTTP, REST, web sockets, or lightweight message bus.</li>
+              <li>Be of the web, not behind the web.</li>
+              <li>Drop most WS-*, ESB, and other "integration" packages.</li>
+            </ul>
+          </section>
+          <section>
+            <h2>SOA?</h2>
+            <p>Different people argue that microservices are a refinement of,
+              evolution of, or reaction against SOA.</p>
+            <p>Unfortunately, SOA was also not well defined....</p>
+          </section>
+          <section>
+            <p>DevOps style teams</p>
+            <ul>
+              <li>Prefer small (2 pizza) teams.</li>
+              <li>Teams should be organized around the business instead of the technology.</li>
+              <li>Don't have one team build it and another team run (or maintain) it.</li>
+              <li>Products not projects.</li>
+            </ul>
+          </section>
+          <section>
+            <p>Decentralized governance and data</p>
+            <ul>
+              <li>Not every problem is a nail, and not every solution is a hammer.</li>
+              <li>Don't prescribe specific languages / frameworks / databases.</li>
+              <li>Let teams figure out what they need.</li>
+              <li>Data Centralization is useful, but couples services to the database and makes it harder to deploy them independently.</li>
+              <li>Can't rely on transactions across services...</li>
+              <li>Eventual consistency and / or managing inconsistencies.</li>
+            </ul>
+          </section>
+          <section>
+            <p>Infrastructure automation</p>
+            <ul>
+              <li>Continuous Integration</li>
+              <li>Continuous Delivery</li>
+              <li>Automated Tests</li>
+              <li>Automated Deployments</li>
+              <li>Cloud services</li>
+              <li>Puppet / Chef / Docker</li>
+            </ul>
+          </section>
+          <section>
+            <p>Design for failure</p>
+            <ul>
+              <li>The application should be designed to tolerate failures of services.</li>
+              <li>Detect failures quickly and attempt to automatically restore services.</li>
+              <li>Sophisticated real-time monitoring, logging, and dashboards.</li>
+            </ul>
+          </section>
         </section>
 
         <section  style="text-align: left;">
           <p>Microservice supportive libraries/tools:</p>
           <ul>
             <li><a href="http://netflix.github.io/">Netflix OSSC</a></li>
+            <li><a href="https://www.docker.com/">Docker</a></li>
+
           </ul>
 
-          <p>Similar projects:</p>
+          <p>More projects:</p>
           <ul>
             <li><a href="http://projects.spring.io/spring-boot/">Spring Boot</a> - Pivotal/Spring</li>
             <li><a href="https://jhipster.github.io/">JHipster</a> - Spring Boot & AngularJS</li>
             <li><a href="http://wildfly.org/swarm/">Wildfly Swarm</a> - Redhat/JBoss</li>
             <li><a href="https://github.com/advantageous/qbit">QBit</a> - Queue based</li>
+            <li><a href="http://vertx.io/">Vert.x</a> - Event driven Java framework</li>
+          </ul>
+        </section>
+
+        <section  style="text-align: left;">
+          <p>Further Reading:</p>
+          <ul>
+            <li><a href="http://martinfowler.com/articles/microservices.html">Microservices</a> - Martin Fowler</li>
+            <li><a href="http://rick-hightower.blogspot.com/2015/03/java-microservices-architecture.html">Java Microservices Architecture</a> - Rick Hightower / Sleepless Dev blog</li>
+            <li><a href="http://microservices.io/patterns/microservices.html">Pattern: Microservices Architecture</a> - Chris Richardson / microservices.io</li>
           </ul>
         </section>
 
